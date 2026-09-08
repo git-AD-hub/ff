@@ -1,7 +1,37 @@
 {
-  "user_id": null,
-  "league_id": null,
+  "user_id": "1393741137163857920",
+  "league_id": "1393697462622883840",
   "last_seen_transaction_ids": [],
-  "player_status": {},
-  "roster_player_ids": []
+  "player_status": {
+    "11631": null,
+    "12514": "Questionable",
+    "12530": null,
+    "3451": null,
+    "4217": "Questionable",
+    "4892": null,
+    "4984": null,
+    "5872": null,
+    "8110": null,
+    "8132": null,
+    "8138": null,
+    "8144": null,
+    "8228": null,
+    "HOU": null
+  },
+  "roster_player_ids": [
+    "HOU",
+    "11631",
+    "4892",
+    "4984",
+    "3451",
+    "8144",
+    "8110",
+    "8132",
+    "8228",
+    "8138",
+    "12530",
+    "12514",
+    "4217",
+    "5872"
+  ]
 }
