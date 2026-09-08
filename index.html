@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roster Check</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2312181A'/%3E%3Ctext x='50' y='64' font-size='48' fill='%2335814F' text-anchor='middle' font-family='Georgia'%3E%E2%9A%AB%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#12181A;
+    --panel:#1B2326;
+    --panel-2:#212B2E;
+    --line:#2A3336;
+    --turf:#3E8F56;
+    --turf-dim:#2C5E3B;
+    --amber:#D98E3F;
+    --red:#C05B4A;
+    --text:#EDEFEF;
+    --muted:#8FA0A3;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--text);
+    font-family:'Inter',-apple-system,sans-serif; -webkit-font-smoothing:antialiased;}
+  body{padding-bottom:60px;}
+
+  header{
+    padding:28px 20px 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:'Oswald',sans-serif; font-weight:500; font-size:13px;
+    letter-spacing:.04em; color:var(--turf); margin:0 0 2px;
+  }
+  h1{
+    font-family:'Oswald',sans-serif; font-weight:700; font-size:32px;
+    margin:0; line-height:1.05; letter-spacing:.01em;
+  }
+  .meta{color:var(--muted); font-size:13px; margin-top:8px;}
+  .meta span{color:var(--text);}
+
+  #status{padding:16px 20px; color:var(--muted); font-size:14px;}
+
+  section{padding:6px 20px 22px;}
+  .section-title{
+    font-family:'Oswald',sans-serif; font-weight:600; font-size:15px;
+    color:var(--muted); margin:22px 0 10px; letter-spacing:.02em;
+  }
+
+  .row{
+    display:flex; align-items:center; gap:12px;
+    padding:12px 0; border-bottom:1px solid var(--line);
+  }
+  .row:last-child{border-bottom:none;}
+  .pos{
+    font-family:'Oswald',sans-serif; font-weight:600; font-size:12px;
+    color:var(--bg); background:var(--turf-dim); color:var(--text);
+    width:38px; height:26px; display:flex; align-items:center; justify-content:center;
+    border-radius:4px; flex-shrink:0;
+  }
+  .who{flex:1; min-width:0;}
+  .name{font-size:15.5px; font-weight:500;}
+  .team{color:var(--muted); font-size:12.5px; margin-top:1px;}
+  .flag{
+    font-size:11.5px; font-weight:600; padding:3px 8px; border-radius:20px;
+    flex-shrink:0; white-space:nowrap;
+  }
+  .flag.out, .flag.ir{background:rgba(192,91,74,.18); color:#E38A78;}
+  .flag.q, .flag.d{background:rgba(217,142,63,.18); color:var(--amber);}
+
+  #refresh{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    background:var(--turf); color:#fff; border:none; border-radius:30px;
+    padding:13px 26px; font-family:'Oswald',sans-serif; font-weight:600;
+    font-size:14px; letter-spacing:.02em; box-shadow:0 6px 18px rgba(0,0,0,.4);
+  }
+  #refresh:active{background:var(--turf-dim);}
+
+  .setup{
+    margin:20px; padding:18px; background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; font-size:14px; line-height:1.6; color:var(--muted);
+  }
+  .setup code{background:var(--panel-2); padding:1px 6px; border-radius:4px; color:var(--text);}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Fantasy roster</p>
+  <h1 id="teamName">Loading&hellip;</h1>
+  <p class="meta">Week <span id="week">&mdash;</span> &nbsp;&middot;&nbsp; <span id="record"></span></p>
+</header>
+
+<div id="status">Fetching your roster from Sleeper&hellip;</div>
+<section id="content" style="display:none;">
+  <div class="section-title">Starters</div>
+  <div id="starters"></div>
+  <div class="section-title">Bench</div>
+  <div id="bench"></div>
+</section>
+
+<button id="refresh" onclick="load()">Refresh</button>
+
+<script>
+// ---- CONFIGURE THESE TWO VALUES for your setup ----
+const SLEEPER_USERNAME = "LesssGeaux";
+const LEAGUE_ID_OVERRIDE = ""; // fill in if you're in >1 league this season, leave blank otherwise
+// ----------------------------------------------------
+
+const API = "https://api.sleeper.app/v1";
+let playersCache = null;
+
+async function j(url){
+  const r = await fetch(url);
+  if(!r.ok) throw new Error(url + " -> " + r.status);
+  return r.json();
+}
+
+function flagClass(status){
+  if(!status) return "";
+  const s = status.toLowerCase();
+  if(s.includes("out")) return "out";
+  if(s.includes("ir")) return "ir";
+  if(s.includes("doubt")) return "d";
+  return "q";
+}
+
+function renderRow(p){
+  const div = document.createElement("div");
+  div.className = "row";
+  div.innerHTML = `
+    <div class="pos">${p.position || "?"}</div>
+    <div class="who">
+      <div class="name">${p.name}</div>
+      <div class="team">${p.team || "FA"}</div>
+    </div>
+    ${p.injury_status ? `<div class="flag ${flagClass(p.injury_status)}">${p.injury_status}</div>` : ""}
+  `;
+  return div;
+}
+
+async function load(){
+  document.getElementById("status").style.display = "block";
+  document.getElementById("status").textContent = "Fetching your roster from Sleeper…";
+  document.getElementById("content").style.display = "none";
+  try{
+    const user = await j(`${API}/user/${SLEEPER_USERNAME}`);
+    const state = await j(`${API}/state/nfl`);
+    const season = state.season, week = state.week;
+
+    let leagueId = LEAGUE_ID_OVERRIDE;
+    if(!leagueId){
+      const leagues = await j(`${API}/user/${user.user_id}/leagues/nfl/${season}`);
+      if(leagues.length !== 1){
+        document.getElementById("status").textContent =
+          leagues.length === 0
+            ? "No leagues found for this season."
+            : "You're in multiple leagues — set LEAGUE_ID_OVERRIDE in this page's script.";
+        return;
+      }
+      leagueId = leagues[0].league_id;
+    }
+
+    const [league, rosters, players] = await Promise.all([
+      j(`${API}/league/${leagueId}`),
+      j(`${API}/league/${leagueId}/rosters`),
+      playersCache ? Promise.resolve(playersCache) : j(`${API}/players/nfl`)
+    ]);
+    playersCache = players;
+
+    const myRoster = rosters.find(r => r.owner_id === user.user_id);
+    if(!myRoster){ document.getElementById("status").textContent = "Couldn't find your roster in this league."; return; }
+
+    document.getElementById("teamName").textContent = league.name || user.display_name;
+    document.getElementById("week").textContent = week;
+    document.getElementById("record").textContent =
+      `${myRoster.settings.wins}-${myRoster.settings.losses}${myRoster.settings.ties ? "-" + myRoster.settings.ties : ""}`;
+
+    const starterIds = myRoster.starters || [];
+    const allIds = myRoster.players || [];
+    const benchIds = allIds.filter(id => !starterIds.includes(id));
+
+    const toCard = id => {
+      const p = players[id] || {};
+      return {
+        name: p.full_name || `${p.first_name||""} ${p.last_name||""}`.trim() || id,
+        position: p.position,
+        team: p.team,
+        injury_status: p.injury_status
+      };
+    };
+
+    const startersEl = document.getElementById("starters");
+    const benchEl = document.getElementById("bench");
+    startersEl.innerHTML = ""; benchEl.innerHTML = "";
+    starterIds.forEach(id => startersEl.appendChild(renderRow(toCard(id))));
+    benchIds.forEach(id => benchEl.appendChild(renderRow(toCard(id))));
+
+    document.getElementById("status").style.display = "none";
+    document.getElementById("content").style.display = "block";
+  }catch(err){
+    document.getElementById("status").textContent = "Couldn't load: " + err.message;
+    console.error(err);
+  }
+}
+
+load();
+</script>
+</body>
+</html>
