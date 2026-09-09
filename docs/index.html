@@ -9,88 +9,122 @@
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
   :root{
-    --bg:#12181A;
-    --panel:#1B2326;
-    --panel-2:#212B2E;
-    --line:#2A3336;
-    --turf:#3E8F56;
-    --turf-dim:#2C5E3B;
-    --amber:#D98E3F;
-    --red:#C05B4A;
-    --text:#EDEFEF;
-    --muted:#8FA0A3;
+    --bg:#12181A; --panel:#1B2326; --panel-2:#212B2E; --line:#2A3336;
+    --turf:#3E8F56; --turf-dim:#2C5E3B; --amber:#D98E3F; --red:#C05B4A;
+    --text:#EDEFEF; --muted:#8FA0A3;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; padding:0; background:var(--bg); color:var(--text);
     font-family:'Inter',-apple-system,sans-serif; -webkit-font-smoothing:antialiased;}
-  body{padding-bottom:60px;}
+  body{padding-bottom:70px;}
 
-  header{
-    padding:28px 20px 20px;
-    border-bottom:1px solid var(--line);
-  }
-  .eyebrow{
-    font-family:'Oswald',sans-serif; font-weight:500; font-size:13px;
-    letter-spacing:.04em; color:var(--turf); margin:0 0 2px;
-  }
-  h1{
-    font-family:'Oswald',sans-serif; font-weight:700; font-size:32px;
-    margin:0; line-height:1.05; letter-spacing:.01em;
-  }
+  header{padding:26px 20px 16px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:flex-start;}
+  .eyebrow{font-family:'Oswald',sans-serif; font-weight:500; font-size:13px; letter-spacing:.04em; color:var(--turf); margin:0 0 2px;}
+  h1{font-family:'Oswald',sans-serif; font-weight:700; font-size:30px; margin:0; line-height:1.05;}
   .meta{color:var(--muted); font-size:13px; margin-top:8px;}
   .meta span{color:var(--text);}
+  #gearBtn{background:var(--panel); border:1px solid var(--line); color:var(--muted); width:38px; height:38px; border-radius:10px; font-size:16px; flex-shrink:0;}
 
   #status{padding:16px 20px; color:var(--muted); font-size:14px;}
 
-  section{padding:6px 20px 22px;}
-  .section-title{
-    font-family:'Oswald',sans-serif; font-weight:600; font-size:15px;
-    color:var(--muted); margin:22px 0 10px; letter-spacing:.02em;
+  .actionrow{display:flex; gap:10px; padding:16px 20px 4px; flex-wrap:wrap;}
+  .actionbtn{
+    flex:1; min-width:140px; background:var(--panel); border:1px solid var(--line);
+    color:var(--text); padding:13px 10px; border-radius:10px; font-family:'Oswald',sans-serif;
+    font-weight:600; font-size:13.5px; letter-spacing:.01em;
   }
+  .actionbtn:active{background:var(--panel-2);}
+  .actionbtn.primary{background:var(--turf); border-color:var(--turf); color:#fff;}
+  .actionbtn.primary:active{background:var(--turf-dim);}
 
-  .row{
-    display:flex; align-items:center; gap:12px;
-    padding:12px 0; border-bottom:1px solid var(--line);
-  }
+  section{padding:6px 20px 22px;}
+  .section-title{font-family:'Oswald',sans-serif; font-weight:600; font-size:15px; color:var(--muted); margin:22px 0 10px; letter-spacing:.02em;}
+
+  .row{display:flex; align-items:flex-start; gap:12px; padding:13px 0; border-bottom:1px solid var(--line);}
   .row:last-child{border-bottom:none;}
-  .pos{
-    font-family:'Oswald',sans-serif; font-weight:600; font-size:12px;
-    color:var(--bg); background:var(--turf-dim); color:var(--text);
-    width:38px; height:26px; display:flex; align-items:center; justify-content:center;
-    border-radius:4px; flex-shrink:0;
-  }
+  .pos{font-family:'Oswald',sans-serif; font-weight:600; font-size:12px; background:var(--turf-dim); color:var(--text);
+    width:38px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:4px; flex-shrink:0; margin-top:1px;}
   .who{flex:1; min-width:0;}
   .name{font-size:15.5px; font-weight:500;}
   .team{color:var(--muted); font-size:12.5px; margin-top:1px;}
-  .flag{
-    font-size:11.5px; font-weight:600; padding:3px 8px; border-radius:20px;
-    flex-shrink:0; white-space:nowrap;
-  }
+  .stats{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; font-size:12px; color:var(--muted);}
+  .stats b{color:var(--text); font-weight:600;}
+  .note{font-size:12px; color:var(--muted); margin-top:4px; font-style:italic;}
+  .flag{font-size:11.5px; font-weight:600; padding:3px 8px; border-radius:20px; flex-shrink:0; white-space:nowrap; margin-top:1px;}
   .flag.out, .flag.ir{background:rgba(192,91,74,.18); color:#E38A78;}
   .flag.q, .flag.d{background:rgba(217,142,63,.18); color:var(--amber);}
+  .flag.bye{background:rgba(143,160,163,.18); color:var(--muted);}
 
-  #refresh{
-    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-    background:var(--turf); color:#fff; border:none; border-radius:30px;
-    padding:13px 26px; font-family:'Oswald',sans-serif; font-weight:600;
-    font-size:14px; letter-spacing:.02em; box-shadow:0 6px 18px rgba(0,0,0,.4);
+  /* Trade analyzer panel */
+  .panel{margin:16px 20px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px; display:none;}
+  .panel.open{display:block;}
+  .panel h3{font-family:'Oswald',sans-serif; font-size:16px; margin:0 0 12px;}
+  .panel label{display:block; font-size:12.5px; color:var(--muted); margin:12px 0 5px;}
+  .panel textarea, .panel input[type=text]{
+    width:100%; background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
+    color:var(--text); padding:10px 12px; font-family:inherit; font-size:14px; resize:vertical;
   }
-  #refresh:active{background:var(--turf-dim);}
+  .panel textarea{min-height:56px;}
+  .panel .submitbtn{margin-top:16px; width:100%; background:var(--turf); border:none; color:#fff;
+    padding:13px; border-radius:8px; font-family:'Oswald',sans-serif; font-weight:600; font-size:14px;}
 
-  .setup{
-    margin:20px; padding:18px; background:var(--panel); border:1px solid var(--line);
-    border-radius:10px; font-size:14px; line-height:1.6; color:var(--muted);
+  #settingsPanel .row2{display:flex; gap:8px;}
+  #settingsPanel .row2 > div{flex:1;}
+  #settingsPanel p{font-size:12.5px; color:var(--muted); line-height:1.6; margin:0 0 12px;}
+  #settingsPanel a{color:var(--turf);}
+
+  #toast{
+    position:fixed; bottom:20px; left:20px; right:20px; background:var(--panel-2);
+    border:1px solid var(--line); color:var(--text); padding:13px 16px; border-radius:10px;
+    font-size:13.5px; text-align:center; display:none; z-index:50;
   }
-  .setup code{background:var(--panel-2); padding:1px 6px; border-radius:4px; color:var(--text);}
 </style>
 </head>
 <body>
 
 <header>
-  <p class="eyebrow">Fantasy roster</p>
-  <h1 id="teamName">Loading&hellip;</h1>
-  <p class="meta">Week <span id="week">&mdash;</span> &nbsp;&middot;&nbsp; <span id="record"></span></p>
+  <div>
+    <p class="eyebrow">Fantasy roster</p>
+    <h1 id="teamName">Loading&hellip;</h1>
+    <p class="meta">Week <span id="week">&mdash;</span> &nbsp;&middot;&nbsp; <span id="record"></span></p>
+  </div>
+  <button id="gearBtn" onclick="togglePanel('settingsPanel')">&#9881;</button>
 </header>
+
+<div class="actionrow">
+  <button class="actionbtn primary" onclick="runDailyDigest()">Run Daily Digest</button>
+  <button class="actionbtn" onclick="runNewsCheck()">Check News Now</button>
+  <button class="actionbtn" onclick="togglePanel('tradePanel')">Analyze a Trade</button>
+</div>
+
+<div class="panel" id="tradePanel">
+  <h3>Trade Analyzer</h3>
+  <label>Players YOU would give up</label>
+  <textarea id="givingUp" placeholder="e.g. Justin Jefferson, 2027 3rd round pick"></textarea>
+  <label>Players YOU would receive</label>
+  <textarea id="receiving" placeholder="e.g. Bijan Robinson"></textarea>
+  <label>Notes (optional)</label>
+  <input type="text" id="rosterContext" placeholder="e.g. I'm thin at RB right now">
+  <button class="submitbtn" onclick="analyzeTrade()">Send for Analysis</button>
+</div>
+
+<div class="panel" id="settingsPanel">
+  <h3>Dashboard Settings</h3>
+  <p>
+    To run workflows from these buttons, this page needs a GitHub token.
+    Create one at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank">github.com/settings/personal-access-tokens/new</a> &mdash;
+    scope it to <b>this repository only</b>, with <b>Actions: Read and write</b> permission and nothing else.
+    Since this repo is public, anyone who inspects this page could see this token, so keep its permissions minimal.
+    It's stored only in your browser (localStorage), never uploaded anywhere.
+  </p>
+  <label>GitHub token</label>
+  <input type="text" id="ghToken" placeholder="github_pat_...">
+  <div class="row2">
+    <div><label>Repo owner</label><input type="text" id="ghOwner"></div>
+    <div><label>Repo name</label><input type="text" id="ghRepo"></div>
+  </div>
+  <button class="submitbtn" onclick="saveSettings()">Save</button>
+</div>
 
 <div id="status">Fetching your roster from Sleeper&hellip;</div>
 <section id="content" style="display:none;">
@@ -98,24 +132,89 @@
   <div id="starters"></div>
   <div class="section-title">Bench</div>
   <div id="bench"></div>
+  <p class="meta" id="insightsMeta" style="padding:8px 0 0;"></p>
 </section>
 
-<button id="refresh" onclick="load()">Refresh</button>
+<div id="toast"></div>
 
 <script>
-// ---- CONFIGURE THESE TWO VALUES for your setup ----
+// ---- CONFIGURE for your setup ----
 const SLEEPER_USERNAME = "LesssGeaux";
-const LEAGUE_ID_OVERRIDE = ""; // fill in if you're in >1 league this season, leave blank otherwise
-// ----------------------------------------------------
+const LEAGUE_ID_OVERRIDE = ""; // fill in if you're in >1 league this season
+// -----------------------------------
 
 const API = "https://api.sleeper.app/v1";
 let playersCache = null;
+let insightsCache = null;
 
-async function j(url){
-  const r = await fetch(url);
-  if(!r.ok) throw new Error(url + " -> " + r.status);
-  return r.json();
+function toast(msg, ms){
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.style.display = "block";
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=> el.style.display = "none", ms || 4000);
 }
+
+function togglePanel(id){
+  document.querySelectorAll(".panel").forEach(p => { if(p.id !== id) p.classList.remove("open"); });
+  document.getElementById(id).classList.toggle("open");
+}
+
+function loadSettings(){
+  document.getElementById("ghToken").value = localStorage.getItem("gh_pat") || "";
+  document.getElementById("ghOwner").value = localStorage.getItem("gh_owner") || guessOwner();
+  document.getElementById("ghRepo").value = localStorage.getItem("gh_repo") || guessRepo();
+}
+function guessOwner(){ return location.hostname.split(".")[0]; }
+function guessRepo(){ const parts = location.pathname.split("/").filter(Boolean); return parts[0] || ""; }
+
+function saveSettings(){
+  localStorage.setItem("gh_pat", document.getElementById("ghToken").value.trim());
+  localStorage.setItem("gh_owner", document.getElementById("ghOwner").value.trim());
+  localStorage.setItem("gh_repo", document.getElementById("ghRepo").value.trim());
+  toast("Settings saved.");
+  togglePanel("settingsPanel");
+}
+
+async function dispatchWorkflow(workflowFile, inputs){
+  const token = localStorage.getItem("gh_pat");
+  const owner = localStorage.getItem("gh_owner") || guessOwner();
+  const repo = localStorage.getItem("gh_repo") || guessRepo();
+  if(!token){ toast("Add your GitHub token in Settings first."); togglePanel("settingsPanel"); return; }
+
+  toast("Triggering " + workflowFile + "…", 3000);
+  try{
+    const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflowFile}/dispatches`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      },
+      body: JSON.stringify({ ref: "main", inputs: inputs || {} })
+    });
+    if(resp.status === 204){
+      toast("Started! Check ntfy in about a minute.", 5000);
+    }else{
+      const text = await resp.text();
+      toast("Failed (" + resp.status + "): " + text.slice(0,120), 7000);
+    }
+  }catch(err){
+    toast("Network error: " + err.message, 6000);
+  }
+}
+
+function runDailyDigest(){ dispatchWorkflow("daily_check.yml", {}); }
+function runNewsCheck(){ dispatchWorkflow("news_watch.yml", {}); }
+function analyzeTrade(){
+  const giving_up = document.getElementById("givingUp").value.trim();
+  const receiving = document.getElementById("receiving").value.trim();
+  const roster_context = document.getElementById("rosterContext").value.trim();
+  if(!giving_up || !receiving){ toast("Fill in both fields."); return; }
+  dispatchWorkflow("trade_check.yml", { giving_up, receiving, roster_context });
+  togglePanel("tradePanel");
+}
+
+async function j(url){ const r = await fetch(url); if(!r.ok) throw new Error(url + " -> " + r.status); return r.json(); }
 
 function flagClass(status){
   if(!status) return "";
@@ -126,16 +225,37 @@ function flagClass(status){
   return "q";
 }
 
+function findInsight(name){
+  if(!insightsCache || !insightsCache.players) return null;
+  return insightsCache.players.find(p => p.name && name && p.name.toLowerCase() === name.toLowerCase()) || null;
+}
+
 function renderRow(p){
   const div = document.createElement("div");
   div.className = "row";
+  const insight = findInsight(p.name);
+  let statsHtml = "";
+  let noteHtml = "";
+  if(insight){
+    const parts = [];
+    if(insight.opponent) parts.push(`Opp <b>${insight.opponent}</b>`);
+    if(insight.projection_low != null && insight.projection_high != null){
+      parts.push(`Proj <b>${insight.projection_low}&ndash;${insight.projection_high} pts</b>`);
+    }
+    if(insight.bye_week) parts.push(`Bye wk <b>${insight.bye_week}</b>`);
+    if(parts.length) statsHtml = `<div class="stats">${parts.join(" &nbsp;&middot;&nbsp; ")}</div>`;
+    if(insight.note) noteHtml = `<div class="note">${insight.note}</div>`;
+  }
+  const byeFlag = insight && insight.opponent === "BYE" ? `<div class="flag bye">BYE</div>` : "";
   div.innerHTML = `
     <div class="pos">${p.position || "?"}</div>
     <div class="who">
       <div class="name">${p.name}</div>
       <div class="team">${p.team || "FA"}</div>
+      ${statsHtml}
+      ${noteHtml}
     </div>
-    ${p.injury_status ? `<div class="flag ${flagClass(p.injury_status)}">${p.injury_status}</div>` : ""}
+    ${p.injury_status ? `<div class="flag ${flagClass(p.injury_status)}">${p.injury_status}</div>` : byeFlag}
   `;
   return div;
 }
@@ -154,20 +274,21 @@ async function load(){
       const leagues = await j(`${API}/user/${user.user_id}/leagues/nfl/${season}`);
       if(leagues.length !== 1){
         document.getElementById("status").textContent =
-          leagues.length === 0
-            ? "No leagues found for this season."
+          leagues.length === 0 ? "No leagues found for this season."
             : "You're in multiple leagues — set LEAGUE_ID_OVERRIDE in this page's script.";
         return;
       }
       leagueId = leagues[0].league_id;
     }
 
-    const [league, rosters, players] = await Promise.all([
+    const [league, rosters, players, insights] = await Promise.all([
       j(`${API}/league/${leagueId}`),
       j(`${API}/league/${leagueId}/rosters`),
-      playersCache ? Promise.resolve(playersCache) : j(`${API}/players/nfl`)
+      playersCache ? Promise.resolve(playersCache) : j(`${API}/players/nfl`),
+      fetch("./data/player_insights.json").then(r => r.ok ? r.json() : null).catch(()=>null)
     ]);
     playersCache = players;
+    insightsCache = insights;
 
     const myRoster = rosters.find(r => r.owner_id === user.user_id);
     if(!myRoster){ document.getElementById("status").textContent = "Couldn't find your roster in this league."; return; }
@@ -177,6 +298,11 @@ async function load(){
     document.getElementById("record").textContent =
       `${myRoster.settings.wins}-${myRoster.settings.losses}${myRoster.settings.ties ? "-" + myRoster.settings.ties : ""}`;
 
+    if(insights && insights.updated){
+      document.getElementById("insightsMeta").textContent =
+        "Player stats refreshed " + new Date(insights.updated).toLocaleString();
+    }
+
     const starterIds = myRoster.starters || [];
     const allIds = myRoster.players || [];
     const benchIds = allIds.filter(id => !starterIds.includes(id));
@@ -185,9 +311,7 @@ async function load(){
       const p = players[id] || {};
       return {
         name: p.full_name || `${p.first_name||""} ${p.last_name||""}`.trim() || id,
-        position: p.position,
-        team: p.team,
-        injury_status: p.injury_status
+        position: p.position, team: p.team, injury_status: p.injury_status
       };
     };
 
@@ -205,6 +329,7 @@ async function load(){
   }
 }
 
+loadSettings();
 load();
 </script>
 </body>
