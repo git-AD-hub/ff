@@ -1,16 +1,19 @@
-name: Sleeper Check
+name: Daily Digest
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
-    - cron: "0 13 * * 3"
+    # 14:00 UTC = 9am CDT (roughly late Sept through early Nov, most of the
+    # early NFL season). Once Central time falls back to CST in early
+    # November, this becomes 8am CT - bump it to "0 15 * * *" if you want it
+    # to stay locked at exactly 9am CT for the rest of the season.
+    - cron: "0 14 * * *"
   workflow_dispatch: {}
 
 permissions:
   contents: write
 
 jobs:
-  check:
+  digest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,18 +25,19 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run checker
+      - name: Run daily digest
         env:
           SLEEPER_USERNAME: ${{ secrets.SLEEPER_USERNAME }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           LEAGUE_ID: ${{ secrets.LEAGUE_ID }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python src/checker.py
+        run: python src/daily_digest.py
 
-      - name: Commit updated state
+      - name: Commit updated state + insights
         run: |
           git config user.name "sleeper-ff-bot"
           git config user.email "actions@github.com"
-          git add state.json
+          git pull --rebase
+          git add state.json docs/data/player_insights.json
           git diff --staged --quiet || git commit -m "Update state [skip ci]"
           git push
