@@ -80,6 +80,25 @@ def find_my_roster(rosters, user_id):
     return None
 
 
+def get_all_rosters_with_owners(league_id):
+    """
+    Returns {roster_id: {"owner_name": str, "player_ids": [...]}} for every
+    team in the league, including yours - useful for trade-opportunity analysis
+    against other teams.
+    """
+    rosters = get_rosters(league_id)
+    users = get_league_users(league_id)
+    name_by_user_id = {u["user_id"]: (u.get("display_name") or u.get("username")) for u in users}
+
+    result = {}
+    for r in rosters:
+        result[r["roster_id"]] = {
+            "owner_name": name_by_user_id.get(r.get("owner_id"), "Unknown"),
+            "player_ids": r.get("players") or [],
+        }
+    return result
+
+
 RELEVANT_POSITIONS = {"QB", "RB", "WR", "TE", "K", "DEF"}
 
 
