@@ -1,0 +1,42 @@
+name: Player News Watch
+
+on:
+  schedule:
+    # Every 3 hours - this is the "real-time-ish" injury/news watcher.
+    # It's separate from the once-a-day digest so you're not getting a full
+    # recap every few hours, just an alert IF something actually happened.
+    - cron: "0 */3 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run news watch
+        env:
+          SLEEPER_USERNAME: ${{ secrets.SLEEPER_USERNAME }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          LEAGUE_ID: ${{ secrets.LEAGUE_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python src/news_watch.py
+
+      - name: Commit updated state
+        run: |
+          git config user.name "sleeper-ff-bot"
+          git config user.email "actions@github.com"
+          git pull --rebase
+          git add state.json
+          git diff --staged --quiet || git commit -m "Update state [skip ci]"
+          git push
