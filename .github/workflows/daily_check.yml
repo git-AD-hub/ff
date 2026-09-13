@@ -31,7 +31,7 @@ jobs:
         run: |
           git config user.name "sleeper-ff-bot"
           git config user.email "actions@github.com"
-          git pull --rebase
+         
           git add state.json docs/data/player_insights.json
           git diff --staged --quiet || git commit -m "Update state [skip ci]"
           git push
