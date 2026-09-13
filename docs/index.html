@@ -93,7 +93,7 @@
 
 <div class="actionrow">
   <button class="actionbtn primary" onclick="runDailyDigest()">Run Daily Digest</button>
-  <button class="actionbtn" onclick="runNewsCheck()">Check News Now</button>
+  <button class="actionbtn" onclick="runPregameCheck()">Run Pregame Check</button>
   <button class="actionbtn" onclick="togglePanel('tradePanel')">Analyze a Trade</button>
 </div>
 
@@ -204,7 +204,7 @@ async function dispatchWorkflow(workflowFile, inputs){
 }
 
 function runDailyDigest(){ dispatchWorkflow("daily_check.yml", {}); }
-function runNewsCheck(){ dispatchWorkflow("news_watch.yml", {}); }
+function runPregameCheck(){ dispatchWorkflow("pregame_check.yml", {}); }
 function analyzeTrade(){
   const giving_up = document.getElementById("givingUp").value.trim();
   const receiving = document.getElementById("receiving").value.trim();
