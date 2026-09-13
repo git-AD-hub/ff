@@ -1,12 +1,6 @@
 name: Daily Digest
 
 on:
-  schedule:
-    # 14:00 UTC = 9am CDT (roughly late Sept through early Nov, most of the
-    # early NFL season). Once Central time falls back to CST in early
-    # November, this becomes 8am CT - bump it to "0 15 * * *" if you want it
-    # to stay locked at exactly 9am CT for the rest of the season.
-    - cron: "0 14 * * *"
   workflow_dispatch: {}
 
 permissions:
