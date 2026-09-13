@@ -8,11 +8,16 @@ import os
 import requests
 
 API_URL = "https://api.anthropic.com/v1/messages"
-MODEL = "claude-sonnet-4-6"
+MODEL_SONNET = "claude-sonnet-4-6"
+MODEL_HAIKU = "claude-haiku-4-5-20251001"
+MODEL = MODEL_SONNET  # default for existing calls
 
 
-def _call_claude(system_prompt, user_prompt, max_tokens=1200):
+def _call_claude(system_prompt, user_prompt, max_tokens=1200, model=MODEL_SONNET, max_searches=None):
     api_key = os.environ["ANTHROPIC_API_KEY"]
+    web_search_tool = {"type": "web_search_20250305", "name": "web_search"}
+    if max_searches:
+        web_search_tool["max_uses"] = max_searches
     resp = requests.post(
         API_URL,
         headers={
@@ -21,11 +26,11 @@ def _call_claude(system_prompt, user_prompt, max_tokens=1200):
             "content-type": "application/json",
         },
         json={
-            "model": MODEL,
+            "model": model,
             "max_tokens": max_tokens,
             "system": system_prompt,
             "messages": [{"role": "user", "content": user_prompt}],
-            "tools": [{"type": "web_search_20250305", "name": "web_search"}],
+            "tools": [web_search_tool],
         },
         timeout=90,
     )
@@ -172,6 +177,45 @@ def player_insights(my_players, week, league_settings):
     raw = _call_claude(system, user, max_tokens=2000)
     # strip accidental code fences if the model adds them anyway
     return raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+
+
+def pregame_check(starters, bench, available_players, week):
+    """
+    Cheap, frequent-ish (3x/week) check: are any of my STARTERS injured or on
+    a bye and need swapping out before the next game window? Uses Haiku
+    (much cheaper than Sonnet) and hard-caps web search usage to keep cost
+    low and predictable, since this runs automatically without you asking.
+    """
+    starters_lines = "\n".join(
+        f"- {p['name']} ({p['position']}, {p['team']})"
+        + (f" - INJURY STATUS: {p['injury_status']}" if p.get("injury_status") else "")
+        for p in starters
+    )
+    bench_lines = "\n".join(
+        f"- {p['name']} ({p['position']}, {p['team']})"
+        + (f" - INJURY STATUS: {p['injury_status']}" if p.get("injury_status") else "")
+        for p in bench
+    ) or "(bench empty)"
+    available_lines = "\n".join(
+        f"- {p['name']} ({p['position']}, {p['team']})" for p in available_players
+    )
+    system = (
+        "You are a fantasy football assistant doing a quick pregame safety check, not a deep "
+        "analysis. Use web search sparingly (2 searches max total, combine players into as few "
+        "queries as possible) to confirm current injury designations and check for bye weeks in "
+        f"week {week}. Keep the whole reply under 150 words, formatted for a push notification, "
+        "no markdown headers. If everything is fine, just say 'ALL CLEAR' plus one short line. "
+        "If a starter is Out/Doubtful/IR or on a bye, name them, and recommend the best specific "
+        "replacement - a bench player at the same position if one is healthy and available, "
+        "otherwise a waiver wire name from the list given."
+    )
+    user = (
+        f"My CURRENT STARTING LINEUP for week {week}:\n{starters_lines}\n\n"
+        f"My BENCH (for replacement options):\n{bench_lines}\n\n"
+        f"Top available waiver wire players (fallback if bench has no good option):\n{available_lines}\n\n"
+        "Check my starters only. Anyone I need to swap out before kickoff?"
+    )
+    return _call_claude(system, user, max_tokens=500, model=MODEL_HAIKU, max_searches=2)
 
 
 def trade_analysis(giving_up, receiving, roster_context, is_pending):
