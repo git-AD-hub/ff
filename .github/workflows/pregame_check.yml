@@ -1,0 +1,30 @@
+name: Pregame Check
+
+on:
+  schedule:
+    # 03:00 UTC on Thu/Sun/Mon = roughly 9-10pm the night before, covering
+    # Wed night (before Thursday Night Football), Sat night (before the
+    # Sunday slate), and Sun night (before Monday Night Football).
+    - cron: "0 3 * * 0,1,4"
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pregame check
+        env:
+          SLEEPER_USERNAME: ${{ secrets.SLEEPER_USERNAME }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          LEAGUE_ID: ${{ secrets.LEAGUE_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python src/pregame_check.py
